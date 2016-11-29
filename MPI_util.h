@@ -13,6 +13,8 @@ class MPI_Tags{
     static int MPI_SEND_CHAR        = 3;
     static int MPI_BCAST_INT        = 4;
     static int MPI_BCAST_CHAR       = 5;
+
+    static int MPI_HEART_BEAT       = 10;
 };
 
 class MPI_Data_type{

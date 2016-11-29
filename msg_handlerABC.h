@@ -9,5 +9,5 @@
 
 class Msg_handlerABC{
 public:
-    virtual void recv_commit()=0;
+    virtual void recv_commit(void* buffer)=0;
 };
