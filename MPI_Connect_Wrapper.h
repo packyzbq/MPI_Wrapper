@@ -30,7 +30,7 @@ struct SendMSG{ // 用于唤醒send进程后，send进程发送的内容
 
 struct ARGS{    //用于 new_msg_come 向 recv传递参数
     MPI_Comm newcomm;
-    int myrank;
+    int source_rank;
     MPI_Datatype datatype;
     MPI_Status arg_stat;
 };
@@ -42,7 +42,12 @@ protected:
     pthread_cond_t recv_thread_cond, send_thread_cond;      //  用于挂起读/写线程时
     pthread_mutex_t recv_mtx, send_mtx;                     //  同上
 
-    int rank, w_size;
+    int myrank, w_size;
+    int errs = 0;
+    int merr;
+    int msglen;
+    char errmsg[MPI_MAX_ERROR_STRING];
+    char hostname[MPI_MAX_PROCESSOR_NAME];
 
 
 public:
@@ -51,6 +56,15 @@ public:
         send_thread_cond = PTHREAD_COND_INITIALIZER;
         recv_mtx = PTHREAD_MUTEX_INITIALIZER;
         send_mtx = PTHREAD_MUTEX_INITIALIZER;
+
+        MPI_Init(0,0);
+        MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
+        MPI_Comm_size(MPI_COMM_WORLD, &w_size);
+        MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+    };
+
+    virtual ~MPI_Connect_Wrapper(){
+        MPI_Finalize();
     };
 
     virtual void recv_thread();

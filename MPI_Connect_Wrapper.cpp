@@ -16,12 +16,12 @@ virtual void MPI_Connect_Wrapper::recv_thread() {
     ARGS* args;
     MPI_Status stat,recv_st;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     MPI_Comm_size(MPI_COMM_WORLD, &w_size);
 
-#ifdef DEBUG
-    cout<<"Proc: "<< rank << ", Pid: " << pid << ", receive thread start...  "<<endl
-#endif
+
+    cout<<"Proc: "<< myrank << ", Pid: " << pid << ", receive thread start...  "<<endl;
+
 
     while(!recv_flag){
         if(new_msg_come(args)){
@@ -39,7 +39,7 @@ virtual void MPI_Connect_Wrapper::recv_thread() {
             }
             MPI_Recv(rb, msgsz, args->datatype, args->arg_stat.MPI_SOURCE, args->arg_stat.MPI_TAG, args->newcomm, &recv_st);
             MPI_Barrier(args->newcomm);
-            msg_handler.recv_commit(rb);
+            msg_handler.recv_commit(args->arg_stat.MPI_TAG, rb);
         }
     }
 }
@@ -47,16 +47,16 @@ virtual void MPI_Connect_Wrapper::recv_thread() {
 void MPI_Connect_Wrapper::send_thread() {
     //发送函数，在平时挂起，使用 send唤醒 来发送信息
     pthread_t pid = pthread_self();
-#ifdef DEBUG
+
     cout<< "Proc: "<< "Send thread start..., pid = " << pid << endl;
-#endif
+
     pthread_mutex_lock(&send_mtx);
     while(!send_flag){
 
         pthread_cond_wait(&send_thread_cond, &send_mtx);
-#ifdef DEBUG
-        cout<< ""
-#endif
+
+        cout << "Send restart..." << endl;
+
         MPI_Send(sendmsg.buf_, sendmsg.msgsize_, sendmsg.datatype_, sendmsg.dest_, sendmsg.tag_, sendmsg.comm_);
     }
     pthread_mutex_unlock(&send_mtx);

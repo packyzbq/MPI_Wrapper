@@ -9,5 +9,6 @@
 
 class Msg_handlerABC{
 public:
-    virtual void recv_commit(void* buffer)=0;
+    virtual void recv_commit(int mpi_tags ,void* buffer)=0;
+
 };

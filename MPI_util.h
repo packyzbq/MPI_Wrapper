@@ -7,6 +7,7 @@
 
 //传输用的tags， 每个tags中包括了传输的数据类型
 class MPI_Tags{
+public:
     static int MPI_RECV_INT         = 0;
     static int MPI_RECV_CHAR        = 1;
     static int MPI_SEND_INT         = 2;
@@ -15,6 +16,8 @@ class MPI_Tags{
     static int MPI_BCAST_CHAR       = 5;
 
     static int MPI_HEART_BEAT       = 10;
+    static int MPI_REGISTEY         = 11;
+    static int MPI_DISCONNECT       = 12;
 };
 
 class MPI_Data_type{
