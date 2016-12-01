@@ -83,7 +83,9 @@ virtual bool MPI_Connect_Wrapper::new_msg_come(ARGS * args) {
 //通过tags 解析出数据类型
 // TODO 添加新的tags时，可能需要改变程序
 virtual MPI_Datatype MPI_Connect_Wrapper::analyz_type(int tags) {
-    if(tags == 0 || tags % 2 == 0)
+    if (tags >= 10)
+        return MPI_PACKED;
+    else if(tags == 0 || tags % 2 == 0)
         return MPI_INT;
     else
         return MPI_CHAR;

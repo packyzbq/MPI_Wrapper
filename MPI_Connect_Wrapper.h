@@ -67,6 +67,7 @@ public:
         MPI_Finalize();
     };
 
+    virtual void run();
     virtual void recv_thread();
     virtual bool new_msg_come(ARGS * args);
     virtual MPI_Datatype analyz_type(int tags);

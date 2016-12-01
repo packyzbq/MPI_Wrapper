@@ -14,27 +14,12 @@ using namespace std;
 class MPI_Server : public MPI_Connect_Wrapper{
 
 public:
-    MPI_Server(Msg_handlerABC mh, char *svc_name) : MPI_Connect_Wrapper(mh), svc_name_(svc_name) {
-
-        MPI_Get_processor_name(hostname, &msglen);
-        cout << "Host: " << hostname << ",Proc: "<< myrank << ", Server initialize..." << endl;
-        merr = MPI_Open_port(MPI_INFO_NULL, port);
-
-        cout << "Host: " << hostname << ",Proc: "<< myrank << ",Server opening port on <" << port <<">" << endl;
-
-        merr = MPI_Publish_name(svc_name, MPI_INFO_NULL, port);
-        if(merr){
-            errs++;
-            MPI_Error_string(merr, errmsg, &msglen);
-            cout << "Error in publish_name :" << errmsg<<endl;
-        }
-        MPI_Barrier(MPI_COMM_WORLD);
-
-    };
+    MPI_Server(Msg_handlerABC mh, char *svc_name) : MPI_Connect_Wrapper(mh), svc_name_(svc_name) {};
 
     ~MPI_Server(){};
 
     void run();                 //启动server各种线程
+    void initial();
     virtual bool new_msg_come(ARGS * args);
     virtual void recv_thread();
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
@@ -51,6 +36,8 @@ private:
     map<int,MPI_Comm> client_comm_list;             //<wid : comm>
     char port[MPI_MAX_PORT_NAME];
     bool accept_conn_flag = false;
+    char hostname[MPI_MAX_PROCESSOR_NAME];
+    MPI_Group bcast_group;
 };
 
 
