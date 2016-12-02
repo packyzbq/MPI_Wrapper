@@ -127,6 +127,7 @@ bool MPI_Server::remove_client(int w_uuid) {
 
 void MPI_Server::bcast(void *buf, int msgsz, MPI_Datatype datatype, MPI_Comm comm) {
 //TODO solve the bcast_comm and root sync problem
+    //
 
 }
 
