@@ -6,25 +6,56 @@
 
 
 MPI_Server::~MPI_Server(){
-    //TODO  disconnect; unpublish service name; finalize; set read_thread、send_thread、accept_thread stop
+
+    map<int ,MPI_Comm>::iterator iter;
+    for(iter = client_comm_list.begin(); iter != client_comm_list.end(); iter++){
+        MPI_Comm_disconnect(&(iter->second));
+    }
+    merr = MPI_Unpublish_name(svc_name_, MPI_INFO_NULL, port);
+    if(merr){
+        errs++;
+        MPI_Error_string(merr, errmsg, &msglen);
+        cout << "[Server]: Unpublish service name error: "<< errmsg << endl;
+    }
+
+    //stop threads
+    set_accept_t_stop();
+    set_recv_stop();
+    set_send_stop();
+
+    MPI_Finalize();
+
 }
 
 void MPI_Server::initial() {
-    // TODO initialize mpi env with multi thread ; start send/recv/accept thread ; set err_handler
-
+    // init MPI env; open port+publish service ; start 3 main threads
+    cout << "[Server] Host: " << hostname << ",Proc: "<< myrank << ", Server initialize..." << endl;
+    int provided;
+    MPI_Init_thread(0,0,MPI_THREAD_MULTIPLE, &provided);
+    MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     MPI_Get_processor_name(hostname, &msglen);
-    cout << "Host: " << hostname << ",Proc: "<< myrank << ", Server initialize..." << endl;
+    MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+
     merr = MPI_Open_port(MPI_INFO_NULL, port);
 
-    cout << "Host: " << hostname << ",Proc: "<< myrank << ",Server opening port on <" << port <<">" << endl;
+    cout << "[Server] Host: " << hostname << ",Proc: "<< myrank << ",Server opening port on <" << port <<">" << endl;
 
     merr = MPI_Publish_name(svc_name_, MPI_INFO_NULL, port);
     if(merr){
         errs++;
         MPI_Error_string(merr, errmsg, &msglen);
-        cout << "Error in publish_name :" << errmsg<<endl;
+        cout << "[Server] Error in publish_name :" << errmsg<<endl;
     }
     MPI_Barrier(MPI_COMM_WORLD);
+
+    //start recv thread
+    pthread_create(&recv_t ,NULL, MPI_Server::recv_thread, NULL);
+
+    //start send thread
+    pthread_create(&send_t, NULL, MPI_Connect_Wrapper::send_thread, NULL);
+
+    //start accept thread
+    pthread_create(&accept_thread, NULL, MPI_Server::accept_conn_thread, NULL);
 }
 
 virtual bool MPI_Server::new_msg_come(ARGS *args) {
@@ -47,7 +78,8 @@ virtual bool MPI_Server::new_msg_come(ARGS *args) {
     return false;
 }
 
-void MPI_Server::accept_conn_thread() {
+void* MPI_Server::accept_conn_thread(void* ptr) {
+    //TODO add return code
     pthread_t mypid = pthread_self();
     cout << "[Server] host: "<< hostname <<", accept connection thread start..." << endl;
     while(!accept_conn_flag) {
@@ -61,14 +93,17 @@ void MPI_Server::accept_conn_thread() {
 
     }
     cout << "[Server] host: "<< hostname << ", accept connection thread stop..." << endl;
+    return 0;
 }
 
-virtual void MPI_Server::recv_thread() {
+virtual void* MPI_Server::recv_thread(void* ptr) {
     cout << "[Server]: receive thread start..." << endl;
 
-    MPI_Connect_Wrapper::recv_thread();
+    merr = (int) MPI_Connect_Wrapper::recv_thread(ptr);
 
     cout << "[Server]: receive thread stop..." << endl;
+
+    return 0;
 }
 
 virtual void MPI_Server::send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm) {
@@ -96,7 +131,14 @@ void MPI_Server::bcast(void *buf, int msgsz, MPI_Datatype datatype, MPI_Comm com
 }
 
 void MPI_Server::run() {
-    // TODO main thread for server
+    // TODO Server work flow, add exception handle
+    initial();
+
+
+
+
+
+
 }
 
 bool MPI_Server::gen_client() {

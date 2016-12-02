@@ -7,7 +7,7 @@
 
 using namespace std;
 
-virtual void MPI_Connect_Wrapper::recv_thread() {
+virtual void* MPI_Connect_Wrapper::recv_thread(void* ptr) {
     int msgsz;
     void* rb;
 
@@ -22,7 +22,7 @@ virtual void MPI_Connect_Wrapper::recv_thread() {
 
     cout<<"Proc: "<< myrank << ", Pid: " << pid << ", receive thread start...  "<<endl;
 
-
+    // TODO add exception handler -> OR add return code
     while(!recv_flag){
         if(new_msg_come(args)){
             MPI_Get_count(&(args->arg_stat), args->datatype, &msgsz);
@@ -42,9 +42,12 @@ virtual void MPI_Connect_Wrapper::recv_thread() {
             msg_handler.recv_commit(args->arg_stat.MPI_TAG, rb);
         }
     }
+
+    return 0;
 }
 
-void MPI_Connect_Wrapper::send_thread() {
+void* MPI_Connect_Wrapper::send_thread(void* ptr) {
+    //TODO add return code
     //发送函数，在平时挂起，使用 send唤醒 来发送信息
     pthread_t pid = pthread_self();
 
@@ -60,6 +63,8 @@ void MPI_Connect_Wrapper::send_thread() {
         MPI_Send(sendmsg.buf_, sendmsg.msgsize_, sendmsg.datatype_, sendmsg.dest_, sendmsg.tag_, sendmsg.comm_);
     }
     pthread_mutex_unlock(&send_mtx);
+
+    return 0;
 
 }
 
@@ -92,9 +97,9 @@ virtual MPI_Datatype MPI_Connect_Wrapper::analyz_type(int tags) {
 }
 
 virtual void MPI_Connect_Wrapper::set_recv_stop() {
-    recv_flag = false;
+    recv_flag = true;
 }
 
 void MPI_Connect_Wrapper::set_send_stop() {
-    send_flag = false;
+    send_flag = true;
 }

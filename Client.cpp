@@ -11,10 +11,13 @@ Client::Client(const Msg_handlerABC &mh, char * svc_name): MPI_Connect_Wrapper(m
 
 };
 
-void Client::recv_thread() {
+void* Client::recv_thread(void* ptr) {
+    //TODO add return code
     cout << "[Client] on host: "<< hostname << ", receive thread start..." << endl;
-    MPI_Connect_Wrapper::recv_thread();
+    MPI_Connect_Wrapper::recv_thread(ptr);
     cout << "[Client] on host: "<< hostname << ", receive thread stop..." << endl;
+
+    return 0;
 }
 
 bool Client::new_msg_come(ARGS *args) {

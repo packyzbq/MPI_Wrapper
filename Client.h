@@ -13,15 +13,15 @@ public:
 
     virtual void run();
     virtual bool new_msg_come(ARGS * args);
-    virtual void recv_thread();
+    virtual void* recv_thread(void* ptr);
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
-
+    void recv_bcast();
 
 private:
     char* svc_name_;
     MPI_Comm sc_comm_;
     MPI_Comm bcast_comm_;
-    char proc_name[MPI_MAX_PROCESSOR_NAME];
+
 
 
 };

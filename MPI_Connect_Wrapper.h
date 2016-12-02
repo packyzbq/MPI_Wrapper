@@ -41,6 +41,7 @@ protected:
     Msg_handlerABC msg_handler;
     pthread_cond_t recv_thread_cond, send_thread_cond;      //  用于挂起读/写线程时
     pthread_mutex_t recv_mtx, send_mtx;                     //  同上
+    pthread_t recv_t, send_t;
 
     int myrank, w_size;
     int errs = 0;
@@ -68,10 +69,10 @@ public:
     };
 
     virtual void run();
-    virtual void recv_thread();
+    virtual void* recv_thread(void* ptr);
     virtual bool new_msg_come(ARGS * args);
     virtual MPI_Datatype analyz_type(int tags);
-    virtual void send_thread();
+    virtual void* send_thread(void* ptr);
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
     //virtual void err_handler();
     void set_recv_stop();

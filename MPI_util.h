@@ -20,9 +20,5 @@ public:
     static int MPI_DISCONNECT       = 12;
 };
 
-class MPI_Data_type{
-
-};
-
 
 #endif //MPI_WRAPPER_MPI_UTIL_H
