@@ -18,6 +18,9 @@ public:
     static int MPI_HEART_BEAT       = 10;
     static int MPI_REGISTEY         = 11;
     static int MPI_DISCONNECT       = 12;
+
+    static int MPI_BCAST_REQ        = 20; //用于广播询问task剩余情况
+    static int MPI_BCAST_ACK       = 21; //用于回复广播询问task
 };
 
 

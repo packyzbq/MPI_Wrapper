@@ -43,6 +43,15 @@ void Client::send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int t
     cout << "[Client]: send finish, send thread sleep..." << endl;
 }
 
+void Client::recv_handle(int tag, void *buf) {
+    // TODO add conditions
+    if(tag == MPI_Tags::MPI_BCAST_REQ){
+
+    }
+    else
+        msg_handler.recv_commit(tag, buf);
+}
+
 void Client::run() {
     // TODO main thread for client
 }

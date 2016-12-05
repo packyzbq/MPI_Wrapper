@@ -15,6 +15,7 @@ public:
     virtual bool new_msg_come(ARGS * args);
     virtual void* recv_thread(void* ptr);
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
+    virtual void recv_handle(int tag, void* buf);
     void recv_bcast();
 
 private:

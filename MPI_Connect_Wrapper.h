@@ -78,6 +78,8 @@ public:
     void set_recv_stop();
     void set_send_stop();
 
+    virtual void recv_handle(int tag, void* buf); //
+
     bool recv_flag = false;
     bool send_flag = true;
 

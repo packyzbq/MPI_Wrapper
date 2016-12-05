@@ -106,6 +106,15 @@ virtual void* MPI_Server::recv_thread(void* ptr) {
     return 0;
 }
 
+void MPI_Server::recv_handle(int tag, void* buf) {
+    //TODO set different conditions
+    if(tag == MPI_Tags::MPI_BCAST_ACK){
+
+    }
+    else
+        msg_handler.recv_commit(tag, buf);
+}
+
 virtual void MPI_Server::send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm) {
     cout << "[Server]: send message..." << endl;
     MPI_Connect_Wrapper::send(buf, msgsize, dest, datatype, tag, comm);
@@ -125,10 +134,18 @@ bool MPI_Server::remove_client(int w_uuid) {
     msg_handler.recv_commit(MPI_Tags::MPI_DISCONNECT, &w_uuid);
 }
 
-void MPI_Server::bcast(void *buf, int msgsz, MPI_Datatype datatype, MPI_Comm comm) {
-//TODO solve the bcast_comm and root sync problem
-    //
-
+void MPI_Server::bcast(void *buf, int msgsz, MPI_Datatype datatype, int tags) {
+// solve the bcast_comm and root sync problem --> no solutions yet
+// use send loop to bcast,
+// **warning**: can't guarantee transfer safety. msg may be discarded when msg is too big.
+// use send loop to bcast
+    int myrank;
+    map<int, MPI_Comm>::iterator iter;
+    for(iter = client_comm_list.begin(); iter != client_comm_list.end(); iter++){
+        MPI_Comm_rank(iter->second, &myrank);
+        MPI_Send(buf, msgsz, datatype, 1-myrank, tags, iter->second);
+    }
+    cout << "[Server]: bcast <" << tags << ">finish" << endl;
 }
 
 void MPI_Server::run() {

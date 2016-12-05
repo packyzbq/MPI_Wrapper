@@ -39,7 +39,8 @@ virtual void* MPI_Connect_Wrapper::recv_thread(void* ptr) {
             }
             MPI_Recv(rb, msgsz, args->datatype, args->arg_stat.MPI_SOURCE, args->arg_stat.MPI_TAG, args->newcomm, &recv_st);
             MPI_Barrier(args->newcomm);
-            msg_handler.recv_commit(args->arg_stat.MPI_TAG, rb);
+            recv_handle(args->arg_stat.MPI_TAG, rb);
+
         }
     }
 

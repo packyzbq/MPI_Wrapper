@@ -6,6 +6,7 @@
 #define MPI_WRAPPER_MPI_SERVER_H
 
 #include "MPI_Connect_Wrapper.h"
+#include "MPI_util.h"
 #include <iostream>
 
 using namespace std;
@@ -22,11 +23,12 @@ public:
     void initial();
     virtual bool new_msg_come(ARGS * args);
     virtual void* recv_thread(void* ptr);
+    virtual void recv_handle(int tag, void* buf);
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
     void* accept_conn_thread(void* ptr);
     bool gen_client();
     bool remove_client(int w_uuid);
-    void bcast(void *buf, int msgsz, MPI_Datatype datatype, MPI_Comm comm);
+    void bcast(void *buf, int msgsz, MPI_Datatype datatype, int tags);
     void set_accept_t_stop(){accept_conn_flag = true;};
 
 
