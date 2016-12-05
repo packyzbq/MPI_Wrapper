@@ -15,12 +15,13 @@ using namespace std;
 class MPI_Server : public MPI_Connect_Wrapper{
 
 public:
-    MPI_Server(Msg_handlerABC mh, char *svc_name) : MPI_Connect_Wrapper(mh), svc_name_(svc_name) {};
+    MPI_Server(Msg_handlerABC &mh, char* svc_name) : MPI_Connect_Wrapper(mh), svc_name_(svc_name) {};
 
     ~MPI_Server(){};
 
     void run();                 //启动server各种线程
     void initial();
+    void stop();
     virtual bool new_msg_come(ARGS * args);
     virtual void* recv_thread(void* ptr);
     virtual void recv_handle(int tag, void* buf);
@@ -36,13 +37,12 @@ public:
 
 private:
     char svc_name_[100];
+    char hostname[MPI_MAX_PROCESSOR_NAME];
     map<int,MPI_Comm> client_comm_list;             //<wid : comm>
     char port[MPI_MAX_PORT_NAME];
-    bool accept_conn_flag = false;
-    char hostname[MPI_MAX_PROCESSOR_NAME];
-    MPI_Group bcast_group;
 
     pthread_t accept_thread;
+    bool accept_conn_flag = false;
 };
 
 

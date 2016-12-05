@@ -81,7 +81,7 @@ public:
     virtual void recv_handle(int tag, void* buf); //
 
     bool recv_flag = false;
-    bool send_flag = true;
+    bool send_flag = false;
 
     SendMSG sendmsg;
 

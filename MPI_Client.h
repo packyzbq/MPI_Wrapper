@@ -7,11 +7,13 @@
 
 #include "MPI_Connect_Wrapper.h"
 
-class Client : public MPI_Connect_Wrapper{
+class MPI_Client : public MPI_Connect_Wrapper{
 public:
-    Client(const Msg_handlerABC &mh, char* svc_name);
+    MPI_Client(const Msg_handlerABC &mh, char* svc_name);
 
     virtual void run();
+    void initial();
+    void stop();
     virtual bool new_msg_come(ARGS * args);
     virtual void* recv_thread(void* ptr);
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
@@ -20,8 +22,12 @@ public:
 
 private:
     char* svc_name_;
+    char portname[MPI_MAX_PORT_NAME];
+
     MPI_Comm sc_comm_;
     MPI_Comm bcast_comm_;
+
+    pthread_t recv_pid, send_pid;
 
 
 
