@@ -30,13 +30,13 @@ void MPI_Server::initial() {
     MPI_Barrier(MPI_COMM_WORLD);
 
     //start recv thread
-    pthread_create(&recv_t ,NULL, MPI_Server::recv_thread, NULL);
+    pthread_create(&recv_t ,NULL, MPI_Server::recv_thread, this);
 
     //start send thread
-    pthread_create(&send_t, NULL, MPI_Connect_Wrapper::send_thread, NULL);
+    pthread_create(&send_t, NULL, MPI_Connect_Wrapper::send_thread, this);
 
     //start accept thread
-    pthread_create(&accept_thread, NULL, MPI_Server::accept_conn_thread, NULL);
+    pthread_create(&accept_thread, NULL, MPI_Server::accept_conn_thread, this);
 }
 
 void MPI_Server::stop() {
@@ -90,18 +90,18 @@ virtual bool MPI_Server::new_msg_come(ARGS *args) {
 void* MPI_Server::accept_conn_thread(void* ptr) {
     //TODO add return code
     pthread_t mypid = pthread_self();
-    cout << "[Server] host: "<< hostname <<", accept connection thread start..." << endl;
-    while(!accept_conn_flag) {
+    cout << "[Server] host: "<< ((MPI_Server*)ptr)->hostname <<", accept connection thread start..." << endl;
+    while(!((MPI_Server*)ptr)->accept_conn_flag) {
         MPI_Comm newcomm;
-        merr = MPI_Comm_accept(port, MPI_INFO_NULL, 0, MPI_COMM_SELF, &newcomm);
-        client_comm_list.insert(pair<int, MPI_Comm>(0, newcomm));
+        ((MPI_Server*)ptr)->merr = MPI_Comm_accept(((MPI_Server*)ptr)->port, MPI_INFO_NULL, 0, MPI_COMM_SELF, &newcomm);
+        ((MPI_Server*)ptr)->client_comm_list.insert(pair<int, MPI_Comm>(0, newcomm));
 
         //TODO receive worker MPI_REGISTEY tags and add to master, in recv_thread() function or ABC recv_commit() function
-        cout << "Host: " << hostname << ",Proc: "<< myrank << ", receive new connection...";
+        cout << "Host: " << ((MPI_Server*)ptr)->hostname << ",Proc: "<< ((MPI_Server*)ptr)->myrank << ", receive new connection...";
         //TODO add to bcast_comm/group
 
     }
-    cout << "[Server] host: "<< hostname << ", accept connection thread stop..." << endl;
+    cout << "[Server] host: "<< ((MPI_Server*)ptr)->hostname << ", accept connection thread stop..." << endl;
     return 0;
 }
 

@@ -69,10 +69,13 @@ public:
     };
 
     virtual void run();
-    virtual void* recv_thread(void* ptr);
+
+    static void* recv_thread(void* ptr);
+    static void* send_thread(void* ptr);
+
     virtual bool new_msg_come(ARGS * args);
     virtual MPI_Datatype analyz_type(int tags);
-    virtual void* send_thread(void* ptr);
+
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
     //virtual void err_handler();
     void set_recv_stop();

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-virtual void* MPI_Connect_Wrapper::recv_thread(void* ptr) {
+virtual void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
     int msgsz;
     void* rb;
 
@@ -20,11 +20,11 @@ virtual void* MPI_Connect_Wrapper::recv_thread(void* ptr) {
     MPI_Comm_size(MPI_COMM_WORLD, &w_size);
 
 
-    cout<<"Proc: "<< myrank << ", Pid: " << pid << ", receive thread start...  "<<endl;
+    cout<<"Proc: "<< ((MPI_Connect_Wrapper*)ptr)->myrank << ", Pid: " << pid << ", receive thread start...  "<<endl;
 
     // TODO add exception handler -> OR add return code
-    while(!recv_flag){
-        if(new_msg_come(args)){
+    while(!((MPI_Connect_Wrapper*)ptr)->recv_flag){
+        if(((MPI_Connect_Wrapper*)ptr)->new_msg_come(args)){
             MPI_Get_count(&(args->arg_stat), args->datatype, &msgsz);
             switch (args->datatype)
             {
@@ -39,7 +39,7 @@ virtual void* MPI_Connect_Wrapper::recv_thread(void* ptr) {
             }
             MPI_Recv(rb, msgsz, args->datatype, args->arg_stat.MPI_SOURCE, args->arg_stat.MPI_TAG, args->newcomm, &recv_st);
             MPI_Barrier(args->newcomm);
-            recv_handle(args->arg_stat.MPI_TAG, rb);
+            ((MPI_Connect_Wrapper*)ptr)->recv_handle(args->arg_stat.MPI_TAG, rb);
 
         }
     }
@@ -47,7 +47,7 @@ virtual void* MPI_Connect_Wrapper::recv_thread(void* ptr) {
     return 0;
 }
 
-void* MPI_Connect_Wrapper::send_thread(void* ptr) {
+virtual void* MPI_Connect_Wrapper::send_thread(void* ptr) {
     //TODO add return code
     //发送函数，在平时挂起，使用 send唤醒 来发送信息
     pthread_t pid = pthread_self();
@@ -55,13 +55,15 @@ void* MPI_Connect_Wrapper::send_thread(void* ptr) {
     cout<< "Proc: "<< "Send thread start..., pid = " << pid << endl;
 
     pthread_mutex_lock(&send_mtx);
-    while(!send_flag){
+    while(!((MPI_Connect_Wrapper*)ptr)->send_flag){
 
         pthread_cond_wait(&send_thread_cond, &send_mtx);
 
         cout << "Send restart..." << endl;
 
-        MPI_Send(sendmsg.buf_, sendmsg.msgsize_, sendmsg.datatype_, sendmsg.dest_, sendmsg.tag_, sendmsg.comm_);
+        MPI_Send(((MPI_Connect_Wrapper*)ptr)->sendmsg.buf_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.msgsize_,
+                 ((MPI_Connect_Wrapper*)ptr)->sendmsg.datatype_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.dest_,
+                 ((MPI_Connect_Wrapper*)ptr)->sendmsg.tag_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.comm_);
     }
     pthread_mutex_unlock(&send_mtx);
 

@@ -24,9 +24,9 @@ public:
     void stop();
     virtual bool new_msg_come(ARGS * args);
     virtual void* recv_thread(void* ptr);
-    virtual void recv_handle(int tag, void* buf);
-    virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
-    void* accept_conn_thread(void* ptr);
+    void recv_handle(int tag, void* buf);
+    void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
+    static void* accept_conn_thread(void* ptr);
     bool gen_client();
     bool remove_client(int w_uuid);
     void bcast(void *buf, int msgsz, MPI_Datatype datatype, int tags);
