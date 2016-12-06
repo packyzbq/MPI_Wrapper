@@ -11,13 +11,15 @@ virtual void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
     int msgsz;
     void* rb;
 
+
+
     pthread_t pid;
     pid = pthread_self();
     ARGS* args;
     MPI_Status stat,recv_st;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
-    MPI_Comm_size(MPI_COMM_WORLD, &w_size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &(((MPI_Connect_Wrapper*)ptr)->myrank));
+    MPI_Comm_size(MPI_COMM_WORLD, &(((MPI_Connect_Wrapper*)ptr)->w_size));
 
 
     cout<<"Proc: "<< ((MPI_Connect_Wrapper*)ptr)->myrank << ", Pid: " << pid << ", receive thread start...  "<<endl;
@@ -47,17 +49,17 @@ virtual void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
     return 0;
 }
 
-virtual void* MPI_Connect_Wrapper::send_thread(void* ptr) {
+void* MPI_Connect_Wrapper::send_thread(void* ptr) {
     //TODO add return code
     //发送函数，在平时挂起，使用 send唤醒 来发送信息
     pthread_t pid = pthread_self();
 
     cout<< "Proc: "<< "Send thread start..., pid = " << pid << endl;
 
-    pthread_mutex_lock(&send_mtx);
+    pthread_mutex_lock(&(((MPI_Connect_Wrapper*)ptr)->send_mtx));
     while(!((MPI_Connect_Wrapper*)ptr)->send_flag){
 
-        pthread_cond_wait(&send_thread_cond, &send_mtx);
+        pthread_cond_wait(&(((MPI_Connect_Wrapper*)ptr)->send_thread_cond), &(((MPI_Connect_Wrapper*)ptr)->send_mtx));
 
         cout << "Send restart..." << endl;
 
@@ -65,7 +67,7 @@ virtual void* MPI_Connect_Wrapper::send_thread(void* ptr) {
                  ((MPI_Connect_Wrapper*)ptr)->sendmsg.datatype_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.dest_,
                  ((MPI_Connect_Wrapper*)ptr)->sendmsg.tag_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.comm_);
     }
-    pthread_mutex_unlock(&send_mtx);
+    pthread_mutex_unlock(&(((MPI_Connect_Wrapper*)ptr)->send_mtx));
 
     return 0;
 
@@ -83,14 +85,14 @@ void MPI_Connect_Wrapper::send(void *buf, int msgsize, int dest, MPI_Datatype da
 
 //探测是否有新的点对点信息到来
 //@return bool args
-virtual bool MPI_Connect_Wrapper::new_msg_come(ARGS * args) {
+bool MPI_Connect_Wrapper::new_msg_come(ARGS * args) {
     //在子类实现，扫描子类的comm列表等
 }
 
 
 //通过tags 解析出数据类型
 // TODO 添加新的tags时，可能需要改变程序
-virtual MPI_Datatype MPI_Connect_Wrapper::analyz_type(int tags) {
+MPI_Datatype MPI_Connect_Wrapper::analyz_type(int tags) {
     if (tags >= 10)
         return MPI_PACKED;
     else if(tags == 0 || tags % 2 == 0)
@@ -99,7 +101,7 @@ virtual MPI_Datatype MPI_Connect_Wrapper::analyz_type(int tags) {
         return MPI_CHAR;
 }
 
-virtual void MPI_Connect_Wrapper::set_recv_stop() {
+void MPI_Connect_Wrapper::set_recv_stop() {
     recv_flag = true;
 }
 

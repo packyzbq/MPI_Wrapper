@@ -68,7 +68,7 @@ void MPI_Server::stop() {
     }
 }
 
-virtual bool MPI_Server::new_msg_come(ARGS *args) {
+bool MPI_Server::new_msg_come(ARGS *args) {
 
     MPI_Status stat;
     int flag;
@@ -106,7 +106,7 @@ void* MPI_Server::accept_conn_thread(void* ptr) {
     return 0;
 }
 
-virtual void* MPI_Server::recv_thread(void* ptr) {
+void* MPI_Server::recv_thread(void* ptr) {
     cout << "[Server]: receive thread start..." << endl;
 
     pthread_create(&recv_t ,NULL, MPI_Connect_Wrapper::recv_thread, ptr);
@@ -125,7 +125,7 @@ void MPI_Server::recv_handle(int tag, void* buf) {
         msg_handler.recv_commit(tag, buf);
 }
 
-virtual void MPI_Server::send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm) {
+void MPI_Server::send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm) {
     cout << "[Server]: send message..." << endl;
     MPI_Connect_Wrapper::send(buf, msgsize, dest, datatype, tag, comm);
     cout << "[Server]: send finish, send thread sleep..." << endl;

@@ -43,7 +43,8 @@ protected:
     pthread_mutex_t recv_mtx, send_mtx;                     //  同上
     pthread_t recv_t, send_t;
 
-    int myrank, w_size;
+    int myrank;
+    int w_size;
     int errs = 0;
     int merr;
     int msglen;
