@@ -7,7 +7,7 @@
 
 using namespace std;
 
-virtual void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
+void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
     int msgsz;
     void* rb;
 
