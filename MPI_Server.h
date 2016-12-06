@@ -36,7 +36,7 @@ public:
 
 
 private:
-    char svc_name_[100];
+    char* svc_name_;
     char hostname[MPI_MAX_PROCESSOR_NAME];
     map<int,MPI_Comm> client_comm_list;             //<wid : comm>
     char port[MPI_MAX_PORT_NAME];

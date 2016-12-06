@@ -5,8 +5,6 @@
 #include "MPI_Server.h"
 
 
-MPI_Server::~MPI_Server(){
-}
 
 void MPI_Server::initial() {
     // init MPI env; open port+publish service ; start 3 main threads
