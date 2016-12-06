@@ -30,7 +30,8 @@ void MPI_Server::initial() {
     MPI_Barrier(MPI_COMM_WORLD);
 
     //start recv thread
-    pthread_create(&recv_t ,NULL, MPI_Server::recv_thread, this);
+    //pthread_create(&recv_t ,NULL, MPI_Server::recv_thread, this);
+    recv_thread(this);
 
     //start send thread
     pthread_create(&send_t, NULL, MPI_Connect_Wrapper::send_thread, this);
@@ -108,7 +109,7 @@ void* MPI_Server::accept_conn_thread(void* ptr) {
 virtual void* MPI_Server::recv_thread(void* ptr) {
     cout << "[Server]: receive thread start..." << endl;
 
-    merr = (int) MPI_Connect_Wrapper::recv_thread(ptr);
+    pthread_create(&recv_t ,NULL, MPI_Connect_Wrapper::recv_thread, ptr);
 
     cout << "[Server]: receive thread stop..." << endl;
 

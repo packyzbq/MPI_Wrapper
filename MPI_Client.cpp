@@ -25,9 +25,10 @@ void MPI_Client::initial() {
     MPI_Comm_connect(portname, MPI_INFO_NULL,0, MPI_COMM_SELF, &sc_comm_);
     cout << "[Clent]: client connect to server on port " << portname << endl;
 
-    pthread_create(&recv_t, NULL, MPI_Client::recv_thread, this);
+    //pthread_create(&recv_t, NULL, MPI_Client::recv_thread, this);
+    recv_thread(this);
 
-    pthread_create(&send_t, NULL, MPI_Client::send_thread, this);
+    pthread_create(&send_t, NULL, MPI_Connect_Wrapper::send_thread, this);
 
 }
 
@@ -43,7 +44,7 @@ void MPI_Client::stop() {
 void* MPI_Client::recv_thread(void* ptr) {
     //TODO add return code
     cout << "[Client] on host: "<< hostname << ", receive thread start..." << endl;
-    MPI_Connect_Wrapper::recv_thread(ptr);
+    pthread_create(&recv_t, NULL, MPI_Connect_Wrapper::recv_thread, ptr);
     cout << "[Client] on host: "<< hostname << ", receive thread stop..." << endl;
 
     return 0;
