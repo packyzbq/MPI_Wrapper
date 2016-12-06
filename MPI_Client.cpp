@@ -25,9 +25,9 @@ void MPI_Client::initial() {
     MPI_Comm_connect(portname, MPI_INFO_NULL,0, MPI_COMM_SELF, &sc_comm_);
     cout << "[Clent]: client connect to server on port " << portname << endl;
 
-    pthread_create(&recv_t, NULL, MPI_Client::recv_thread, NULL);
+    pthread_create(&recv_t, NULL, MPI_Client::recv_thread, this);
 
-    pthread_create(&send_t, NULL, MPI_Client::send_thread, NULL);
+    pthread_create(&send_t, NULL, MPI_Client::send_thread, this);
 
 }
 
