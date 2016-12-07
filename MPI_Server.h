@@ -15,7 +15,7 @@ using namespace std;
 class MPI_Server : public MPI_Connect_Wrapper{
 
 public:
-    MPI_Server(Msg_handlerABC &mh, char* svc_name) : MPI_Connect_Wrapper(mh), svc_name_(svc_name) {};
+    MPI_Server(Msg_handlerABC *mh, char* svc_name) : MPI_Connect_Wrapper(mh), svc_name_(svc_name) {};
 
     ~MPI_Server(){};
 
