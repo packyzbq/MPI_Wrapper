@@ -7,7 +7,7 @@
 
 using namespace std;
 
-MPI_Client::MPI_Client(const Msg_handlerABC &mh, char * svc_name): MPI_Connect_Wrapper(mh), svc_name_(svc_name){
+MPI_Client::MPI_Client(Msg_handlerABC *mh, char * svc_name): MPI_Connect_Wrapper(mh), svc_name_(svc_name){
 
 };
 
