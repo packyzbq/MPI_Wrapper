@@ -8,13 +8,13 @@
 
 void MPI_Server::initial() {
     // init MPI env; open port+publish service ; start 3 main threads
-    cout << "[Server] Host: " << hostname << ",Proc: "<< myrank << ", Server initialize..." << endl;
     int provided;
     MPI_Init_thread(0,0,MPI_THREAD_MULTIPLE, &provided);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     MPI_Get_processor_name(hostname, &msglen);
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 
+    cout << "[Server] Host: " << hostname << ",Proc: "<< myrank << ", Server initialize..." << endl;
     merr = MPI_Open_port(MPI_INFO_NULL, port);
 
     cout << "[Server] Host: " << hostname << ",Proc: "<< myrank << ",Server opening port on <" << port <<">" << endl;
@@ -23,18 +23,21 @@ void MPI_Server::initial() {
     if(merr){
         errs++;
         MPI_Error_string(merr, errmsg, &msglen);
-        cout << "[Server] Error in publish_name :" << errmsg<<endl;
+        cout << "[Server]: Error in publish_name :" << errmsg<<endl;
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     //start recv thread
-    //pthread_create(&recv_t ,NULL, MPI_Server::recv_thread, this);
-    recv_thread(this);
+    cout << "[Server]: receive thread start..." << endl;
+    pthread_create(&recv_t ,NULL, MPI_Server::recv_thread, this);
+    //recv_thread(this);
 
     //start send thread
+    cout << "[Server]: send thread start..." << endl;
     pthread_create(&send_t, NULL, MPI_Connect_Wrapper::send_thread, this);
 
     //start accept thread
+    cout << "[Server]: accept thread start..." << endl;
     pthread_create(&accept_thread, NULL, MPI_Server::accept_conn_thread, this);
 }
 
@@ -74,14 +77,13 @@ bool MPI_Server::new_msg_come(ARGS *args) {
 
     for(iter = client_comm_list.begin(); iter != client_comm_list.end(); iter++){
         MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, iter->second , &flag,&stat);
-        if(flag)
-        {
+        if(flag) {
             args->newcomm = iter->second;
             args->arg_stat = stat;
             args->datatype = analyz_type(stat.MPI_TAG);
             args->source_rank = stat.MPI_SOURCE;
+            return true;
         }
-        return true;
     }
     return false;
 }
