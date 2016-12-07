@@ -69,7 +69,7 @@ public:
         MPI_Finalize();
     };
 
-    virtual void run();
+    virtual void run(){};
 
     static void* recv_thread(void* ptr);
     static void* send_thread(void* ptr);
@@ -82,7 +82,7 @@ public:
     void set_recv_stop();
     void set_send_stop();
 
-    virtual void recv_handle(int tag, void* buf); //
+    virtual void recv_handle(int tag, void* buf){}; //
 
     bool recv_flag = false;
     bool send_flag = false;
