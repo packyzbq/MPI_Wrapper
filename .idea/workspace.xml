@@ -56,10 +56,10 @@
       <file leaf-file-name="MPI_Server.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MPI_Server.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="183" column="0" selection-start-line="183" selection-start-column="0" selection-end-line="183" selection-end-column="0" />
+            <state relative-caret-position="250">
+              <caret line="31" column="53" selection-start-line="31" selection-start-column="53" selection-end-line="31" selection-end-column="53" />
               <folding>
-                <element signature="e#4000#4188#0" expanded="false" />
+                <element signature="e#4009#4197#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -425,7 +425,7 @@
       <updated>1480062244874</updated>
       <workItem from="1480062246080" duration="3136000" />
       <workItem from="1480299021423" duration="61752000" />
-      <workItem from="1480930179065" duration="13448000" />
+      <workItem from="1480930179065" duration="13873000" />
     </task>
     <task id="LOCAL-00001" summary="MPI_Connect_Wrapper complete">
       <created>1480409294942</created>
@@ -518,11 +518,18 @@
       <option name="project" value="LOCAL" />
       <updated>1481091325841</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="update for  make">
+      <created>1481092369611</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1481092369611</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="78336000" />
+    <option name="totallyTimeSpent" value="78761000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -624,7 +631,7 @@
         <state relative-caret-position="2392">
           <caret line="104" column="13" selection-start-line="104" selection-start-column="13" selection-end-line="104" selection-end-column="13" />
           <folding>
-            <element signature="e#4000#4188#0" expanded="false" />
+            <element signature="e#4009#4197#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -801,10 +808,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MPI_Server.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="183" column="0" selection-start-line="183" selection-start-column="0" selection-end-line="183" selection-end-column="0" />
+        <state relative-caret-position="250">
+          <caret line="31" column="53" selection-start-line="31" selection-start-column="53" selection-end-line="31" selection-end-column="53" />
           <folding>
-            <element signature="e#4000#4188#0" expanded="false" />
+            <element signature="e#4009#4197#0" expanded="false" />
           </folding>
         </state>
       </provider>

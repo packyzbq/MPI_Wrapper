@@ -29,7 +29,7 @@ void MPI_Server::initial() {
 
     //start recv thread
     cout << "[Server]: receive thread start..." << endl;
-    pthread_create(&recv_t ,NULL, MPI_Server::recv_thread, this);
+    pthread_create(&recv_t ,NULL, MPI_Connect_Wrapper::recv_thread, this);
     //recv_thread(this);
 
     //start send thread
