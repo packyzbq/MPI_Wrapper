@@ -7,7 +7,7 @@
 
 using namespace std;
 
-MPI_Client::MPI_Client(const Msg_handlerABC &mh, char * svc_name): MPI_Connect_Wrapper(mh), svc_name_(svc_name){
+MPI_Client::MPI_Client(Msg_handlerABC *mh, char * svc_name): MPI_Connect_Wrapper(mh), svc_name_(svc_name){
 
 };
 
@@ -79,7 +79,7 @@ void MPI_Client::recv_handle(int tag, void *buf) {
 
     }
     else
-        msg_handler.recv_commit(tag, buf);
+        msg_handler->recv_commit(tag, buf);
 }
 
 void MPI_Client::run() {
