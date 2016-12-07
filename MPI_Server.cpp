@@ -120,7 +120,7 @@ void MPI_Server::recv_handle(int tag, void* buf) {
 
     }
     else
-        msg_handler.recv_commit(tag, buf);
+        msg_handler->recv_commit(tag, buf);
 }
 
 void MPI_Server::send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm) {
@@ -139,7 +139,7 @@ bool MPI_Server::remove_client(int w_uuid) {
 
     client_comm_list.erase(w_uuid);
     //告知master 已经移除worker
-    msg_handler.recv_commit(MPI_Tags::MPI_DISCONNECT, &w_uuid);
+    msg_handler->recv_commit(MPI_Tags::MPI_DISCONNECT, &w_uuid);
 }
 
 void MPI_Server::bcast(void *buf, int msgsz, MPI_Datatype datatype, int tags) {

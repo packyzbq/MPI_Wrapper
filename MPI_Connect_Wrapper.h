@@ -38,7 +38,7 @@ struct ARGS{    //用于 new_msg_come 向 recv传递参数
 
 class MPI_Connect_Wrapper {
 protected:
-    Msg_handlerABC msg_handler;
+    Msg_handlerABC* msg_handler;
     pthread_cond_t recv_thread_cond, send_thread_cond;      //  用于挂起读/写线程时
     pthread_mutex_t recv_mtx, send_mtx;                     //  同上
     pthread_t recv_t, send_t;
@@ -53,7 +53,7 @@ protected:
 
 
 public:
-    MPI_Connect_Wrapper(Msg_handlerABC mh):msg_handler(mh){
+    MPI_Connect_Wrapper(Msg_handlerABC* mh):msg_handler(mh){
         recv_thread_cond = PTHREAD_COND_INITIALIZER;
         send_thread_cond = PTHREAD_COND_INITIALIZER;
         recv_mtx = PTHREAD_MUTEX_INITIALIZER;

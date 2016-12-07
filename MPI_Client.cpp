@@ -79,7 +79,7 @@ void MPI_Client::recv_handle(int tag, void *buf) {
 
     }
     else
-        msg_handler.recv_commit(tag, buf);
+        msg_handler->recv_commit(tag, buf);
 }
 
 void MPI_Client::run() {
