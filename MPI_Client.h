@@ -9,7 +9,7 @@
 
 class MPI_Client : public MPI_Connect_Wrapper{
 public:
-    MPI_Client(Msg_handlerABC *mh, char* svc_name);
+    MPI_Client(Msg_handlerABC *mh, char* svc_name, char* port);
 
     virtual void run();
     void initial();
@@ -23,6 +23,9 @@ public:
 private:
     char* svc_name_;
     char portname[MPI_MAX_PORT_NAME];
+
+    int wid=0;
+    int dest_rank;
 
     MPI_Comm sc_comm_;
     MPI_Comm bcast_comm_;

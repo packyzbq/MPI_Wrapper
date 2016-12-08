@@ -4,10 +4,11 @@
 
 #include "MPI_Client.h"
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 
-MPI_Client::MPI_Client(Msg_handlerABC *mh, char * svc_name): MPI_Connect_Wrapper(mh), svc_name_(svc_name){
+MPI_Client::MPI_Client(Msg_handlerABC *mh, char* svc_name, char* port=(char *) ""): MPI_Connect_Wrapper(mh), svc_name_(svc_name), portname(port){
 
 };
 
@@ -20,15 +21,22 @@ void MPI_Client::initial() {
     int provid;
     MPI_Init_thread(0,0, MPI_THREAD_MULTIPLE, &provid);
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
-    MPI_Lookup_name(svc_name_, MPI_INFO_NULL, portname);
 
-    MPI_Comm_connect(portname, MPI_INFO_NULL,0, MPI_COMM_SELF, &sc_comm_);
-    cout << "[Clent]: client connect to server on port " << portname << endl;
-
-    //pthread_create(&recv_t, NULL, MPI_Client::recv_thread, this);
-    recv_thread(this);
-
+    cout << "[Client]: recv thread start...." << endl;
+    pthread_create(&recv_t, NULL, MPI_Connect_Wrapper::recv_thread, this);
+    //recv_thread(this);
+    cout << "[Client]: send thread start...." << endl;
     pthread_create(&send_t, NULL, MPI_Connect_Wrapper::send_thread, this);
+
+    if(strlen(portname) == 0 && strlen(svc_name_) != 0)
+        MPI_Lookup_name(svc_name_, MPI_INFO_NULL, portname);
+    MPI_Comm_connect(portname, MPI_INFO_NULL,0, MPI_COMM_SELF, &sc_comm_);
+    cout << "[Client]: client connect to server on port " << portname << endl;
+    int rank;
+    MPI_Comm_rank(sc_comm_,&rank);
+    dest_rank = 1-rank;
+
+    send(&wid,1, dest_rank,MPI_INT, MPI_Tags::MPI_REGISTEY, sc_comm_);
 
 }
 
@@ -68,7 +76,7 @@ bool MPI_Client::new_msg_come(ARGS *args) {
 }
 
 void MPI_Client::send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm) {
-    cout << "[Client]: send message..." << endl;
+    cout << "[Client]: send message...<" << (*(char*)buf)<< ">"<< endl;
     MPI_Connect_Wrapper::send(buf, msgsize, dest, datatype, tag, comm);
     cout << "[Client]: send finish, send thread sleep..." << endl;
 }

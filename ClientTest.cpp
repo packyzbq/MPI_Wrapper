@@ -1,9 +1,10 @@
 //
 // Created by zhaobq on 2016/12/5.
 //
+#include "MPI_Client.h"
+#include <iostream>
 
-#include "MPI_Server.h"
-
+using namespace std;
 
 class test_msg_handler : public Msg_handlerABC{
 public:
@@ -12,11 +13,11 @@ public:
     };
 };
 
-int main(){
+int main()
+{
     test_msg_handler* tmh;
     tmh = new test_msg_handler();
-    MPI_Server server(tmh, "TEST");
-    server.run();
-
+    MPI_Client client(tmh, (char *) "TEST", (char *) "");
+    client.run();
 
 }

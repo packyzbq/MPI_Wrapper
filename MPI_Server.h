@@ -24,7 +24,7 @@ public:
     void stop();
     virtual bool new_msg_come(ARGS * args);
     virtual void* recv_thread(void* ptr);
-    void recv_handle(int tag, void* buf);
+    void recv_handle(int tag, void* buf, MPI_Comm comm);
     void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
     static void* accept_conn_thread(void* ptr);
     bool gen_client();
@@ -32,13 +32,15 @@ public:
     void bcast(void *buf, int msgsz, MPI_Datatype datatype, int tags);
     void set_accept_t_stop(){accept_conn_flag = true;};
 
-
+    int comm_list_size();
+    MPI_Comm get_comm(int index);
 
 
 private:
     char* svc_name_;
+    int m_i = 0;                                            //client_comm_list index
     char hostname[MPI_MAX_PROCESSOR_NAME];
-    map<int,MPI_Comm> client_comm_list;             //<wid : comm>
+    map<MPI_Comm, int> client_comm_list;             //<wid : comm>
     char port[MPI_MAX_PORT_NAME];
 
     pthread_t accept_thread;

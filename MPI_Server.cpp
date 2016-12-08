@@ -95,7 +95,7 @@ void* MPI_Server::accept_conn_thread(void* ptr) {
     while(!((MPI_Server*)ptr)->accept_conn_flag) {
         MPI_Comm newcomm;
         ((MPI_Server*)ptr)->merr = MPI_Comm_accept(((MPI_Server*)ptr)->port, MPI_INFO_NULL, 0, MPI_COMM_SELF, &newcomm);
-        ((MPI_Server*)ptr)->client_comm_list.insert(pair<int, MPI_Comm>(0, newcomm));
+        ((MPI_Server*)ptr)->client_comm_list.insert(pair<MPI_Comm, int>(newcomm, 0));
 
         //TODO receive worker MPI_REGISTEY tags and add to master, in recv_thread() function or ABC recv_commit() function
         cout << "Host: " << ((MPI_Server*)ptr)->hostname << ",Proc: "<< ((MPI_Server*)ptr)->myrank << ", receive new connection...";
@@ -116,13 +116,18 @@ void* MPI_Server::recv_thread(void* ptr) {
     return 0;
 }
 
-void MPI_Server::recv_handle(int tag, void* buf) {
+void MPI_Server::recv_handle(int tag, void* buf, MPI_Comm comm) {
     //TODO set different conditions
-    if(tag == MPI_Tags::MPI_BCAST_ACK){
 
+    switch(tag){
+        case MPI_Tags::MPI_REGISTEY:
+            client_comm_list[comm] = (*(int*)buf);
+            break;
+        case MPI_Tags::MPI_BCAST_ACK:
+            break;
+        default:
+            msg_handler->recv_commit(tag, buf);
     }
-    else
-        msg_handler->recv_commit(tag, buf);
 }
 
 void MPI_Server::send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm) {
@@ -181,4 +186,8 @@ void MPI_Server::run() {
 
 bool MPI_Server::gen_client() {
     //TODO MPI_COMM_SPAWN -> client; add new client to bcast_comm/group
+}
+
+int MPI_Server::comm_list_size() {
+    return client_comm_list.size();
 }
