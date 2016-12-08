@@ -8,8 +8,8 @@
 
 using namespace std;
 
-MPI_Client::MPI_Client(Msg_handlerABC *mh, char* svc_name, char* port=(char *) ""): MPI_Connect_Wrapper(mh), svc_name_(svc_name), portname(port){
-
+MPI_Client::MPI_Client(Msg_handlerABC *mh, char* svc_name, char* port): MPI_Connect_Wrapper(mh), svc_name_(svc_name){
+    strcpy(portname,port);
 };
 
 void MPI_Client::initial() {
