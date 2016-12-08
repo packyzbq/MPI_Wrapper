@@ -73,16 +73,18 @@ void MPI_Server::stop() {
 bool MPI_Server::new_msg_come(ARGS *args) {
 
     MPI_Status stat;
-    int flag;
+    int flag = 0;
     map<int, MPI_Comm > ::iterator iter;
 
     for(iter = client_comm_list.begin(); iter != client_comm_list.end(); iter++){
-        MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, iter->second , &flag,&stat);
+        MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, iter->second , &flag, &stat);
         if(flag) {
+            args = new ARGS();
             args->newcomm = iter->second;
             args->arg_stat = stat;
             args->datatype = analyz_type(stat.MPI_TAG);
             args->source_rank = stat.MPI_SOURCE;
+            flag = 0;
             return true;
         }
     }
@@ -103,7 +105,7 @@ void* MPI_Server::accept_conn_thread(void* ptr) {
         ((MPI_Server*)ptr)->client_comm_list.insert(pair<MPI_Comm, int>(newcomm, 0));
 
         //TODO receive worker MPI_REGISTEY tags and add to master, in recv_thread() function or ABC recv_commit() function
-        cout << "Host: " << ((MPI_Server*)ptr)->hostname << ",Proc: "<< ((MPI_Server*)ptr)->myrank << ", receive new connection...";
+        cout << "[Server]:Host: " << ((MPI_Server*)ptr)->hostname << ",Proc: "<< ((MPI_Server*)ptr)->myrank << ", receive new connection..." << endl;
         //TODO add to bcast_comm/group
 
     }

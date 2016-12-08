@@ -36,6 +36,7 @@ void MPI_Client::initial() {
             cout << "[Client]: Lookup service name error, msg: "<< errmsg << endl;
         }
     }
+    cout << "[Client]: service found on port:<" << portname << ">" << endl;
 
     while(!recv_flag && !send_flag);
     MPI_Comm_connect(portname, MPI_INFO_NULL,0, MPI_COMM_SELF, &sc_comm_);
@@ -68,14 +69,15 @@ void* MPI_Client::recv_thread(void* ptr) {
 
 bool MPI_Client::new_msg_come(ARGS *args) {
     MPI_Status stat;
-    int flag;
+    int flag = 0;
     MPI_Iprobe(MPI_ANY_SOURCE,MPI_ANY_TAG, sc_comm_, &flag, &stat);
     if(flag){
+        args = new ARGS();
         args->arg_stat = stat;
         args->datatype = analyz_type(stat.MPI_TAG);
         args->source_rank = stat.MPI_SOURCE;
         args->newcomm = sc_comm_;
-
+        flag = 0;
         return true;
     }
     else
