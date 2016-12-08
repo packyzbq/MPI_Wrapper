@@ -14,10 +14,10 @@ void MPI_Server::initial() {
     MPI_Get_processor_name(hostname, &msglen);
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 
-    cout << "[Server] Host: " << hostname << ",Proc: "<< myrank << ", Server initialize..." << endl;
+    cout << "[Server]: Host: " << hostname << ",Proc: "<< myrank << ", Server initialize..." << endl;
     merr = MPI_Open_port(MPI_INFO_NULL, port);
 
-    cout << "[Server] Host: " << hostname << ",Proc: "<< myrank << ",Server opening port on <" << port <<">" << endl;
+    cout << "[Server]: Host: " << hostname << ",Proc: "<< myrank << ",Server opening port on <" << port <<">" << endl;
 
     merr = MPI_Publish_name(svc_name_, MPI_INFO_NULL, port);
     if(merr){
@@ -25,6 +25,7 @@ void MPI_Server::initial() {
         MPI_Error_string(merr, errmsg, &msglen);
         cout << "[Server]: Error in publish_name :" << errmsg<<endl;
     }
+    cout << "[Server]: publish service <" << svc_name_ << ">" << endl;
     MPI_Barrier(MPI_COMM_WORLD);
 
     //start recv thread

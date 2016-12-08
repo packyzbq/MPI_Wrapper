@@ -17,7 +17,7 @@ int main()
 {
     test_msg_handler* tmh;
     tmh = new test_msg_handler();
-    MPI_Client client(tmh, (char *) "TEST", (char *) "");
+    MPI_Client client(tmh,"TEST","");
     client.run();
 
 }
