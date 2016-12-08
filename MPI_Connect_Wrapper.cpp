@@ -11,7 +11,7 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
     int msgsz;
     void* rb;
 
-
+    ((MPI_Connect_Wrapper*)ptr)->recv_flag = false;
 
     pthread_t pid;
     pid = pthread_self();
@@ -51,6 +51,7 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
 
 void* MPI_Connect_Wrapper::send_thread(void* ptr) {
     //TODO add return code
+    ((MPI_Connect_Wrapper*)ptr)->send_flag = false;
     //发送函数，在平时挂起，使用 send唤醒 来发送信息
     pthread_t pid = pthread_self();
 

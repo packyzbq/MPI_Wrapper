@@ -96,6 +96,10 @@ void* MPI_Server::accept_conn_thread(void* ptr) {
     while(!((MPI_Server*)ptr)->accept_conn_flag) {
         MPI_Comm newcomm;
         ((MPI_Server*)ptr)->merr = MPI_Comm_accept(((MPI_Server*)ptr)->port, MPI_INFO_NULL, 0, MPI_COMM_SELF, &newcomm);
+        if(((MPI_Server*)ptr)->merr){
+            MPI_Error_string(((MPI_Server*)ptr)->merr, ((MPI_Server*)ptr)->errmsg, &(((MPI_Server*)ptr)->msglen));
+            cout << "[Server]: accept client error, msg: " << ((MPI_Server*)ptr)->errmsg << endl;
+        }
         ((MPI_Server*)ptr)->client_comm_list.insert(pair<MPI_Comm, int>(newcomm, 0));
 
         //TODO receive worker MPI_REGISTEY tags and add to master, in recv_thread() function or ABC recv_commit() function

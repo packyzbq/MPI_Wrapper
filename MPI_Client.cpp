@@ -18,9 +18,8 @@ void MPI_Client::initial() {
     send_flag = false;
     recv_flag = false;
 
-    int provid, merr, msglen;
-    char errmsg[MPI_MAX_ERROR_STRING];
-    MPI_Init_thread(0,0, MPI_THREAD_MULTIPLE, &provid);
+    int provide;
+    MPI_Init_thread(0,0, MPI_THREAD_MULTIPLE, &provide);
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 
     cout << "[Client]: recv thread start...." << endl;
@@ -37,6 +36,8 @@ void MPI_Client::initial() {
             cout << "[Client]: Lookup service name error, msg: "<< errmsg << endl;
         }
     }
+
+    while(!recv_flag && !send_flag);
     MPI_Comm_connect(portname, MPI_INFO_NULL,0, MPI_COMM_SELF, &sc_comm_);
     cout << "[Client]: client connect to server on port " << portname << endl;
     int rank;

@@ -18,7 +18,7 @@ public:
     virtual void* recv_thread(void* ptr);
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
     virtual void recv_handle(int tag, void* buf);
-    void recv_bcast();
+    //TODO void recv_bcast();
 
 private:
     char* svc_name_;
@@ -28,9 +28,9 @@ private:
     int dest_rank;
 
     MPI_Comm sc_comm_;
-    MPI_Comm bcast_comm_;
+    //MPI_Comm bcast_comm_;
 
-    pthread_t recv_pid, send_pid;
+    //pthread_t recv_pid, send_pid;
 
 
 

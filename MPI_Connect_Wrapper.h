@@ -84,8 +84,8 @@ public:
 
     virtual void recv_handle(int tag, void* buf, MPI_Comm comm){}; //
 
-    bool recv_flag = false;
-    bool send_flag = false;
+    bool recv_flag = true;
+    bool send_flag = true;
 
     SendMSG sendmsg;
 
