@@ -75,6 +75,7 @@ public:
     static void* send_thread(void* ptr);
 
     virtual bool new_msg_come(ARGS * args);
+    virtual SendMSG* getSendmsg();
     virtual MPI_Datatype analyz_type(int tags);
 
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);
