@@ -40,9 +40,9 @@ void MPI_Client::initial() {
     cout << "[Client]: client connect to server on port " << portname << endl;
     int rank;
     MPI_Comm_rank(sc_comm_,&rank);
-    dest_rank = 1-rank;
+    dest_rank = 0;
 
-    send(&wid,1, dest_rank,MPI_INT, MPI_Tags::MPI_REGISTEY, sc_comm_);
+    send(&wid, 1, dest_rank, MPI_INT, MPI_Tags::MPI_REGISTEY, sc_comm_);
 
 }
 
@@ -83,7 +83,7 @@ bool MPI_Client::new_msg_come(ARGS *args) {
 }
 
 void MPI_Client::send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm) {
-    cout << "[Client]: send message...<" << (*(char*)buf)<< ">"<< endl;
+    cout << "[Client]: send message...<" << (*(int*)buf)<< ","<< msgsize << "," << dest << ">"<< endl;
     MPI_Connect_Wrapper::send(buf, msgsize, dest, datatype, tag, comm);
     cout << "[Client]: send finish, send thread sleep..." << endl;
 }

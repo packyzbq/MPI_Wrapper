@@ -40,7 +40,7 @@ class MPI_Connect_Wrapper {
 protected:
     Msg_handlerABC* msg_handler;
     pthread_cond_t recv_thread_cond, send_thread_cond;      //  用于挂起读/写线程时
-    pthread_mutex_t recv_mtx, send_mtx;                     //  同上
+    pthread_mutex_t recv_mtx, send_mtx, sendmsg_mtx;                     //  同上
     pthread_t recv_t, send_t;
 
     int myrank;

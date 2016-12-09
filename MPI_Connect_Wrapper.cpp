@@ -71,6 +71,7 @@ void* MPI_Connect_Wrapper::send_thread(void* ptr) {
     while(!((MPI_Connect_Wrapper*)ptr)->send_flag){
 
         pthread_cond_wait(&(((MPI_Connect_Wrapper*)ptr)->send_thread_cond), &(((MPI_Connect_Wrapper*)ptr)->send_mtx));
+        pthread_mutex_lock(&(((MPI_Connect_Wrapper*)ptr)->sendmsg_mtx));
 #ifdef DEBUG
         cout << "Send restart..., send msg =<" << ((MPI_Connect_Wrapper*)ptr)->sendmsg.buf_ << ","
              << ((MPI_Connect_Wrapper*)ptr)->sendmsg.dest_
@@ -83,6 +84,7 @@ void* MPI_Connect_Wrapper::send_thread(void* ptr) {
 #ifdef DEBUG
         cout << "Send finish..." << endl;
 #endif
+        pthread_mutex_unlock(&(((MPI_Connect_Wrapper*)ptr)->sendmsg_mtx));
     }
     pthread_mutex_unlock(&(((MPI_Connect_Wrapper*)ptr)->send_mtx));
 
@@ -94,7 +96,9 @@ void MPI_Connect_Wrapper::send(void *buf, int msgsize, int dest, MPI_Datatype da
     //唤醒send_thread， 发送信息
 
     pthread_mutex_lock(&send_mtx);
+    pthread_mutex_lock(&sendmsg_mtx);
     sendmsg.init(buf, msgsize, dest, datatype, tag, comm);
+    pthread_mutex_unlock(&sendmsg_mtx);
     pthread_cond_signal(&send_thread_cond);
     pthread_mutex_unlock(&send_mtx);
 
