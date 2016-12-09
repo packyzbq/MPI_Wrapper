@@ -65,7 +65,7 @@ void* MPI_Connect_Wrapper::send_thread(void* ptr) {
     //发送函数，在平时挂起，使用 send唤醒 来发送信息
     pthread_t pid = pthread_self();
 #ifdef DEBUG
-    cout<< "Proc: "<< "Send thread start..., pid = " << pid << endl;
+    cout<< "<send_thread>: Proc: "<< "Send thread start..., pid = " << pid << endl;
 #endif
     pthread_mutex_lock(&(((MPI_Connect_Wrapper*)ptr)->send_mtx));
     while(!((MPI_Connect_Wrapper*)ptr)->send_flag){
@@ -73,16 +73,13 @@ void* MPI_Connect_Wrapper::send_thread(void* ptr) {
         pthread_cond_wait(&(((MPI_Connect_Wrapper*)ptr)->send_thread_cond), &(((MPI_Connect_Wrapper*)ptr)->send_mtx));
         pthread_mutex_lock(&(((MPI_Connect_Wrapper*)ptr)->sendmsg_mtx));
 #ifdef DEBUG
-        cout << "Send restart..., send msg =<" << ((MPI_Connect_Wrapper*)ptr)->sendmsg.buf_ << ","
-             << ((MPI_Connect_Wrapper*)ptr)->sendmsg.dest_
-             << ((MPI_Connect_Wrapper*)ptr)->sendmsg.tag_
-             << endl;
+        cout << "<send_thread>: Send restart..., send msg =<" << ((MPI_Connect_Wrapper*)ptr)->sendmsg.buf_ << "," << ((MPI_Connect_Wrapper*)ptr)->sendmsg.dest_ << ((MPI_Connect_Wrapper*)ptr)->sendmsg.tag_ << endl;
 #endif
         MPI_Send(((MPI_Connect_Wrapper*)ptr)->sendmsg.buf_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.msgsize_,
                  ((MPI_Connect_Wrapper*)ptr)->sendmsg.datatype_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.dest_,
                  ((MPI_Connect_Wrapper*)ptr)->sendmsg.tag_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.comm_);
 #ifdef DEBUG
-        cout << "Send finish..." << endl;
+        cout << "<send_thread>: Send finish..." << endl;
 #endif
         pthread_mutex_unlock(&(((MPI_Connect_Wrapper*)ptr)->sendmsg_mtx));
     }
