@@ -5,6 +5,7 @@
 #include <iostream>
 #include "MPI_Connect_Wrapper.h"
 
+#define DEBUG
 using namespace std;
 
 void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
@@ -21,9 +22,9 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
     MPI_Comm_rank(MPI_COMM_WORLD, &(((MPI_Connect_Wrapper*)ptr)->myrank));
     MPI_Comm_size(MPI_COMM_WORLD, &(((MPI_Connect_Wrapper*)ptr)->w_size));
 
-
+#ifdef DEBUG
     cout<<"Proc: "<< ((MPI_Connect_Wrapper*)ptr)->myrank << ", Pid: " << pid << ", receive thread start...  "<<endl;
-
+#endif
     // TODO add exception handler -> OR add return code
     while(!((MPI_Connect_Wrapper*)ptr)->recv_flag){
         if(((MPI_Connect_Wrapper*)ptr)->new_msg_come(args)){
@@ -40,7 +41,13 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
                     break;
             }
             MPI_Recv(rb, msgsz, args->datatype, args->arg_stat.MPI_SOURCE, args->arg_stat.MPI_TAG, args->newcomm, &recv_st);
+#ifdef DEBUG
+            cout << "receive a message <-- <" << rb << ">" << endl;
+#endif
             MPI_Barrier(args->newcomm);
+#ifdef DEBUG
+            cout << "handled by recv_handler" << endl;
+#endif
             ((MPI_Connect_Wrapper*)ptr)->recv_handle(args->arg_stat.MPI_TAG, rb, args->newcomm);
 
         }
@@ -54,19 +61,22 @@ void* MPI_Connect_Wrapper::send_thread(void* ptr) {
     ((MPI_Connect_Wrapper*)ptr)->send_flag = false;
     //发送函数，在平时挂起，使用 send唤醒 来发送信息
     pthread_t pid = pthread_self();
-
+#ifdef DEBUG
     cout<< "Proc: "<< "Send thread start..., pid = " << pid << endl;
-
+#endif
     pthread_mutex_lock(&(((MPI_Connect_Wrapper*)ptr)->send_mtx));
     while(!((MPI_Connect_Wrapper*)ptr)->send_flag){
 
         pthread_cond_wait(&(((MPI_Connect_Wrapper*)ptr)->send_thread_cond), &(((MPI_Connect_Wrapper*)ptr)->send_mtx));
-
+#ifdef DEBUG
         cout << "Send restart..." << endl;
-
+#endif
         MPI_Send(((MPI_Connect_Wrapper*)ptr)->sendmsg.buf_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.msgsize_,
                  ((MPI_Connect_Wrapper*)ptr)->sendmsg.datatype_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.dest_,
                  ((MPI_Connect_Wrapper*)ptr)->sendmsg.tag_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.comm_);
+#ifdef DEBUG
+        cout << "Send finish..." << endl;
+#endif
     }
     pthread_mutex_unlock(&(((MPI_Connect_Wrapper*)ptr)->send_mtx));
 
