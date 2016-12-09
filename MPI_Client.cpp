@@ -15,9 +15,6 @@ MPI_Client::MPI_Client(Msg_handlerABC *mh, char* svc_name, char* port): MPI_Conn
 void MPI_Client::initial() {
     cout << "[Client]: client initail..." << endl;
 
-    send_flag = false;
-    recv_flag = false;
-
     int provide;
     MPI_Init_thread(0,0, MPI_THREAD_MULTIPLE, &provide);
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
@@ -38,7 +35,7 @@ void MPI_Client::initial() {
     }
     cout << "[Client]: service found on port:<" << portname << ">" << endl;
 
-    while(!recv_flag && !send_flag);
+    while(recv_flag || send_flag);
     MPI_Comm_connect(portname, MPI_INFO_NULL,0, MPI_COMM_SELF, &sc_comm_);
     cout << "[Client]: client connect to server on port " << portname << endl;
     int rank;
