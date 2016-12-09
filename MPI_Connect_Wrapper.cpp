@@ -23,11 +23,14 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
     MPI_Comm_size(MPI_COMM_WORLD, &(((MPI_Connect_Wrapper*)ptr)->w_size));
 
 #ifdef DEBUG
-    cout<<"Proc: "<< ((MPI_Connect_Wrapper*)ptr)->myrank << ", Pid: " << pid << ", receive thread start...  "<<endl;
+    cout<<"<thread_recv>: Proc: "<< ((MPI_Connect_Wrapper*)ptr)->myrank << ", Pid: " << pid << ", receive thread start...  "<<endl;
 #endif
     // TODO add exception handler -> OR add return code
     while(!((MPI_Connect_Wrapper*)ptr)->recv_flag){
         if(((MPI_Connect_Wrapper*)ptr)->new_msg_come(args)){
+#ifdef DEBUG
+            cout <<"<thread_recv>: detect a new message" << endl;
+#endif
             MPI_Get_count(&(args->arg_stat), args->datatype, &msgsz);
             switch (args->datatype)
             {
@@ -42,11 +45,11 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
             }
             MPI_Recv(rb, msgsz, args->datatype, args->arg_stat.MPI_SOURCE, args->arg_stat.MPI_TAG, args->newcomm, &recv_st);
 #ifdef DEBUG
-            cout << "receive a message <-- <" << rb << ">" << endl;
+            cout << "<thread_recv>: receive a message <-- <" << rb << ">" << endl;
 #endif
             MPI_Barrier(args->newcomm);
 #ifdef DEBUG
-            cout << "handled by recv_handler" << endl;
+            cout << "<thread_recv>: handled by recv_handler" << endl;
 #endif
             ((MPI_Connect_Wrapper*)ptr)->recv_handle(args->arg_stat.MPI_TAG, rb, args->newcomm);
 

@@ -128,6 +128,9 @@ void MPI_Server::recv_handle(int tag, void* buf, MPI_Comm comm) {
 
     switch(tag){
         case MPI_Tags::MPI_REGISTEY:
+#ifdef DEBUG
+            cout << "get a registery from " << (*(int*)buf) << endl;
+#endif
             client_comm_list[comm] = (*(int*)buf);
             break;
         case MPI_Tags::MPI_BCAST_ACK:
