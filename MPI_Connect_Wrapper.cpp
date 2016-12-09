@@ -72,7 +72,10 @@ void* MPI_Connect_Wrapper::send_thread(void* ptr) {
 
         pthread_cond_wait(&(((MPI_Connect_Wrapper*)ptr)->send_thread_cond), &(((MPI_Connect_Wrapper*)ptr)->send_mtx));
 #ifdef DEBUG
-        cout << "Send restart..." << endl;
+        cout << "Send restart..., send msg =<" << ((MPI_Connect_Wrapper*)ptr)->sendmsg.buf_ << ","
+             << ((MPI_Connect_Wrapper*)ptr)->sendmsg.dest_
+             << ((MPI_Connect_Wrapper*)ptr)->sendmsg.tag_
+             << endl;
 #endif
         MPI_Send(((MPI_Connect_Wrapper*)ptr)->sendmsg.buf_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.msgsize_,
                  ((MPI_Connect_Wrapper*)ptr)->sendmsg.datatype_, ((MPI_Connect_Wrapper*)ptr)->sendmsg.dest_,
