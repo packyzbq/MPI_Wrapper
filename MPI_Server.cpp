@@ -3,8 +3,9 @@
 //
 
 #include "MPI_Server.h"
+#include <cstdlib>
 
-
+#define DEBUG
 
 void MPI_Server::initial() {
     // init MPI env; open port+publish service ; start 3 main threads
@@ -72,21 +73,29 @@ void MPI_Server::stop() {
 
 bool MPI_Server::new_msg_come(ARGS *args) {
 
-    MPI_Status stat;
+    if(client_comm_list.size() == 0)
+        return false;
+    MPI_Status *stat;
     int flag = 0;
     map<int, MPI_Comm > ::iterator iter;
-
     for(iter = client_comm_list.begin(); iter != client_comm_list.end(); iter++){
-        MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, iter->second , &flag, &stat);
+        stat = new MPI_Status();
+        MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, iter->second , &flag, stat);
         if(flag) {
+#ifdef DEBUG
+            cout << "[Server]: dectect a new msg <" << stat->MPI_SOURCE << ";" << stat->MPI_TAG <<endl;
+#endif
             args = new ARGS();
             args->newcomm = iter->second;
-            args->arg_stat = stat;
-            args->datatype = analyz_type(stat.MPI_TAG);
-            args->source_rank = stat.MPI_SOURCE;
+            args->arg_stat = *stat;
+            args->datatype = analyz_type(stat->MPI_TAG);
+            args->source_rank = stat->MPI_SOURCE;
             flag = 0;
+            free(stat);
             return true;
         }
+        free(stat);
+
     }
     return false;
 }
