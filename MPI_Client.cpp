@@ -65,14 +65,14 @@ void* MPI_Client::recv_thread(void* ptr) {
 }
 
 bool MPI_Client::new_msg_come(ARGS *args) {
-    MPI_Status stat;
+    MPI_Status* stat;
     int flag = 0;
-    MPI_Iprobe(MPI_ANY_SOURCE,MPI_ANY_TAG, sc_comm_, &flag, &stat);
+    MPI_Iprobe(MPI_ANY_SOURCE,MPI_ANY_TAG, sc_comm_, &flag, stat);
     if(flag){
         args = new ARGS();
         args->arg_stat = stat;
-        args->datatype = analyz_type(stat.MPI_TAG);
-        args->source_rank = stat.MPI_SOURCE;
+        args->datatype = analyz_type(stat->MPI_TAG);
+        args->source_rank = stat->MPI_SOURCE;
         args->newcomm = sc_comm_;
         flag = 0;
         return true;

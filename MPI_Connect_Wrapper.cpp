@@ -31,7 +31,7 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
 #ifdef DEBUG
             cout <<"<thread_recv>: detect a new message" << endl;
 #endif
-            MPI_Get_count(&(args->arg_stat), args->datatype, &msgsz);
+            MPI_Get_count((args->arg_stat), args->datatype, &msgsz);
             switch (args->datatype)
             {
                 case MPI_INT:
@@ -43,7 +43,7 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
                 default:
                     break;
             }
-            MPI_Recv(rb, msgsz, args->datatype, args->arg_stat.MPI_SOURCE, args->arg_stat.MPI_TAG, args->newcomm, &recv_st);
+            MPI_Recv(rb, msgsz, args->datatype, args->arg_stat->MPI_SOURCE, args->arg_stat->MPI_TAG, args->newcomm, &recv_st);
 #ifdef DEBUG
             cout << "<thread_recv>: receive a message <-- <" << rb << ">" << endl;
 #endif
@@ -51,7 +51,7 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
 #ifdef DEBUG
             cout << "<thread_recv>: handled by recv_handler" << endl;
 #endif
-            ((MPI_Connect_Wrapper*)ptr)->recv_handle(args->arg_stat.MPI_TAG, rb, args->newcomm);
+            ((MPI_Connect_Wrapper*)ptr)->recv_handle(args->arg_stat->MPI_TAG, rb, args->newcomm);
 
         }
     }
