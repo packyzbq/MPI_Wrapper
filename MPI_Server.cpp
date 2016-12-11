@@ -92,11 +92,12 @@ bool MPI_Server::new_msg_come(ARGS *args) {
 #ifdef DEBUG
             cout << "[Server]: dectect a new msg <" << stat->MPI_SOURCE << ";" << stat->MPI_TAG <<endl;
 #endif
-            args = new ARGS();
+            //args = new ARGS();
             args->newcomm = (iter->first);
             args->arg_stat = stat;
             args->datatype = analyz_type(stat->MPI_TAG);
             args->source_rank = stat->MPI_SOURCE;
+            args->print();
             free(stat);
             free(flag);
             return true;

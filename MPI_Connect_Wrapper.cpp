@@ -16,7 +16,7 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
 
     pthread_t pid;
     pid = pthread_self();
-    ARGS* args;
+    ARGS* args = new ARGS;
     MPI_Status recv_st;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &(((MPI_Connect_Wrapper*)ptr)->myrank));
@@ -30,6 +30,7 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
         if(((MPI_Connect_Wrapper*)ptr)->new_msg_come(args)){
 #ifdef DEBUG
             cout <<"<thread_recv>: detect a new message" << endl;
+            args->print();
 #endif
             MPI_Get_count((args->arg_stat), args->datatype, &msgsz);
             switch (args->datatype)
