@@ -9,12 +9,12 @@
 
 void MPI_Server::initial() {
     // init MPI env; open port+publish service ; start 3 main threads
+    cout << "--------------------------init start-----------------------" << endl;
     int provided;
     MPI_Init_thread(0,0,MPI_THREAD_MULTIPLE, &provided);
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     MPI_Get_processor_name(hostname, &msglen);
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
-
     cout << "[Server]: Host: " << hostname << ",Proc: "<< myrank << ", Server initialize..." << endl;
     merr = MPI_Open_port(MPI_INFO_NULL, port);
 
@@ -41,6 +41,8 @@ void MPI_Server::initial() {
     //start accept thread
     cout << "[Server]: accept thread start..." << endl;
     pthread_create(&accept_thread, NULL, MPI_Server::accept_conn_thread, this);
+
+    cout << "---------------------  init finish ----------------------------" << endl;
 }
 
 void MPI_Server::stop() {
@@ -111,10 +113,11 @@ void* MPI_Server::accept_conn_thread(void* ptr) {
             MPI_Error_string(((MPI_Server*)ptr)->merr, ((MPI_Server*)ptr)->errmsg, &(((MPI_Server*)ptr)->msglen));
             cout << "[Server]: accept client error, msg: " << ((MPI_Server*)ptr)->errmsg << endl;
         }
-        ((MPI_Server*)ptr)->client_comm_list.insert(pair<MPI_Comm, int>(newcomm, 0));
 
+        MPI_Barrier(newcomm);
+        ((MPI_Server*)ptr)->client_comm_list.insert(pair<MPI_Comm, int>(newcomm, 0));
         //TODO receive worker MPI_REGISTEY tags and add to master, in recv_thread() function or ABC recv_commit() function
-        cout << "[Server]:Host: " << ((MPI_Server*)ptr)->hostname << ",Proc: "<< ((MPI_Server*)ptr)->myrank << ", receive new connection..." << endl;
+        cout << "[Server]:Host: " << ((MPI_Server*)ptr)->hostname << ", Proc: "<< ((MPI_Server*)ptr)->myrank << ", receive new connection..." << endl;
         //TODO add to bcast_comm/group
 
     }

@@ -17,7 +17,7 @@ void* MPI_Connect_Wrapper::recv_thread(void *ptr) {
     pthread_t pid;
     pid = pthread_self();
     ARGS* args;
-    MPI_Status stat,recv_st;
+    MPI_Status recv_st;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &(((MPI_Connect_Wrapper*)ptr)->myrank));
     MPI_Comm_size(MPI_COMM_WORLD, &(((MPI_Connect_Wrapper*)ptr)->w_size));
