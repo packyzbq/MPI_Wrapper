@@ -9,6 +9,9 @@
 #include "pthread.h"
 #include "MPI_util.h"
 #include <map>
+#include <iostream>
+
+using namespace std;
 
 struct SendMSG{ // 用于唤醒send进程后，send进程发送的内容
     void* buf_;
@@ -26,6 +29,9 @@ struct SendMSG{ // 用于唤醒send进程后，send进程发送的内容
         tag_ = tag;
         comm_ = comm;
     }
+
+    void print(){
+    }
 };
 
 struct ARGS{    //用于 new_msg_come 向 recv传递参数
@@ -33,6 +39,10 @@ struct ARGS{    //用于 new_msg_come 向 recv传递参数
     int source_rank;
     MPI_Datatype datatype;
     MPI_Status *arg_stat;
+
+    void print(){
+        cout << "<args_info>: newcomm=" << newcomm << "; source=" << source_rank << "; datatype=" << datatype << "; status:{" << arg_stat->MPI_TAG << ";" <<arg_stat->count << "}" << endl;
+    }
 };
 
 
