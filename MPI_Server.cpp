@@ -78,12 +78,17 @@ bool MPI_Server::new_msg_come(ARGS *args) {
     if(client_comm_list.size() == 0)
         return false;
     MPI_Status *stat;
-    int flag = 0;
+    int *flag = new int;
+    *flag = 0;
     map<int, MPI_Comm > ::iterator iter;
     for(iter = client_comm_list.begin(); iter != client_comm_list.end(); iter++){
         stat = new MPI_Status();
-        MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, iter->second , &flag, stat);
-        if(flag) {
+        merr = MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, iter->first , flag, stat);
+        if(merr){
+            MPI_Error_string(merr, errmsg, &msglen);
+            cout << "[Server-Error]: " << errmsg << endl;
+        }
+        if(*flag) {
 #ifdef DEBUG
             cout << "[Server]: dectect a new msg <" << stat->MPI_SOURCE << ";" << stat->MPI_TAG <<endl;
 #endif
@@ -92,10 +97,11 @@ bool MPI_Server::new_msg_come(ARGS *args) {
             args->arg_stat = *stat;
             args->datatype = analyz_type(stat->MPI_TAG);
             args->source_rank = stat->MPI_SOURCE;
-            flag = 0;
             free(stat);
+            free(flag);
             return true;
         }
+        free(flag);
         free(stat);
 
     }
