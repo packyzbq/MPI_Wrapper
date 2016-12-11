@@ -32,7 +32,7 @@ struct ARGS{    //用于 new_msg_come 向 recv传递参数
     MPI_Comm newcomm;
     int source_rank;
     MPI_Datatype datatype;
-    MPI_Status arg_stat;
+    MPI_Status *arg_stat;
 };
 
 

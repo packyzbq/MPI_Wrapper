@@ -80,7 +80,7 @@ bool MPI_Server::new_msg_come(ARGS *args) {
     MPI_Status *stat;
     int *flag = new int;
     *flag = 0;
-    map<int, MPI_Comm > ::iterator iter;
+    map<MPI_Comm, int> ::iterator iter;
     for(iter = client_comm_list.begin(); iter != client_comm_list.end(); iter++){
         stat = new MPI_Status();
         merr = MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, iter->first , flag, stat);
@@ -93,8 +93,8 @@ bool MPI_Server::new_msg_come(ARGS *args) {
             cout << "[Server]: dectect a new msg <" << stat->MPI_SOURCE << ";" << stat->MPI_TAG <<endl;
 #endif
             args = new ARGS();
-            args->newcomm = iter->second;
-            args->arg_stat = *stat;
+            args->newcomm = (iter->first);
+            args->arg_stat = stat;
             args->datatype = analyz_type(stat->MPI_TAG);
             args->source_rank = stat->MPI_SOURCE;
             free(stat);
@@ -119,11 +119,12 @@ void* MPI_Server::accept_conn_thread(void* ptr) {
             MPI_Error_string(((MPI_Server*)ptr)->merr, ((MPI_Server*)ptr)->errmsg, &(((MPI_Server*)ptr)->msglen));
             cout << "[Server]: accept client error, msg: " << ((MPI_Server*)ptr)->errmsg << endl;
         }
-
         MPI_Barrier(newcomm);
         ((MPI_Server*)ptr)->client_comm_list.insert(pair<MPI_Comm, int>(newcomm, 0));
         //TODO receive worker MPI_REGISTEY tags and add to master, in recv_thread() function or ABC recv_commit() function
-        cout << "[Server]:Host: " << ((MPI_Server*)ptr)->hostname << ", Proc: "<< ((MPI_Server*)ptr)->myrank << ", receive new connection..." << endl;
+#ifdef DEBUG
+        cout << "[Server]:Host: " << ((MPI_Server*)ptr)->hostname << ", Proc: "<< ((MPI_Server*)ptr)->myrank << ", receive new connection...; MPI_COMM="<< newcomm << endl;
+#endif
         //TODO add to bcast_comm/group
 
     }
