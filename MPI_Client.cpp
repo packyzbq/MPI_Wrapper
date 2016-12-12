@@ -13,35 +13,40 @@ MPI_Client::MPI_Client(Msg_handlerABC *mh, char* svc_name, char* port): MPI_Conn
 };
 
 void MPI_Client::initial() {
+    cout << "--------------------inti start-------------------" << endl;
     cout << "[Client]: client initail..." << endl;
 
     int provide;
     MPI_Init_thread(0,0, MPI_THREAD_MULTIPLE, &provide);
     MPI_Comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
 
-    cout << "[Client]: recv thread start...." << endl;
     pthread_create(&recv_t, NULL, MPI_Connect_Wrapper::recv_thread, this);
+    cout << "[Client]: recv thread start...." << endl;
     //recv_thread(this);
-    cout << "[Client]: send thread start...." << endl;
     pthread_create(&send_t, NULL, MPI_Connect_Wrapper::send_thread, this);
+    cout << "[Client]: send thread start...." << endl;
 
     if(strlen(portname) == 0 && strlen(svc_name_) != 0) {
         cout << "[Client]: finding service name <" << svc_name_ << "> ..." <<endl;
         merr = MPI_Lookup_name(svc_name_, MPI_INFO_NULL, portname);
         if(merr){
             MPI_Error_string(merr, errmsg, &msglen);
-            cout << "[Client]: Lookup service name error, msg: "<< errmsg << endl;
+            cout << "[Client-error]: Lookup service name error, msg: "<< errmsg << endl;
         }
     }
     cout << "[Client]: service found on port:<" << portname << ">" << endl;
 
     while(recv_flag || send_flag);
-    MPI_Comm_connect(portname, MPI_INFO_NULL,0, MPI_COMM_SELF, &sc_comm_);
-    cout << "[Client]: client connect to server on port " << portname << endl;
+    merr = MPI_Comm_connect(portname, MPI_INFO_NULL,0, MPI_COMM_SELF, &sc_comm_);
+    if(merr){
+        MPI_Error_string(merr, errmsg, &msglen);
+        cout << "[Client-error]: Connect to Server error, msg: " << errmsg << endl;
+    }
+    cout << "[Client]: client connect to server, comm = " << sc_comm_ << endl;
     int rank;
     MPI_Comm_rank(sc_comm_,&rank);
     dest_rank = 0;
-
+    cout << "-------------------- init finish------------------" << endl;
     send(&wid, 1, dest_rank, MPI_INT, MPI_Tags::MPI_REGISTEY, sc_comm_);
 
 }
