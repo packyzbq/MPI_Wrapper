@@ -21,7 +21,8 @@ public:
 
     void run();                 //启动server各种线程
     void initial();
-    void stop();
+    virtual void stop();
+    virtual void finalize();
     virtual bool new_msg_come(ARGS * args);
     virtual void* recv_thread(void* ptr);
     void recv_handle(int tag, void* buf, MPI_Comm comm);

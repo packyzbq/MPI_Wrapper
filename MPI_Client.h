@@ -14,6 +14,8 @@ public:
     virtual void run();
     void initial();
     void stop();
+    void finalize();
+
     virtual bool new_msg_come(ARGS * args);
     virtual void* recv_thread(void* ptr);
     virtual void send(void *buf, int msgsize, int dest, MPI_Datatype datatype, int tag, MPI_Comm comm);

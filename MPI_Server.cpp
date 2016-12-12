@@ -30,22 +30,23 @@ void MPI_Server::initial() {
     MPI_Barrier(MPI_COMM_WORLD);
 
     //start recv thread
-    cout << "[Server]: receive thread start..." << endl;
     pthread_create(&recv_t ,NULL, MPI_Connect_Wrapper::recv_thread, this);
+    cout << "[Server]: receive thread start..." << endl;
     //recv_thread(this);
 
     //start send thread
-    cout << "[Server]: send thread start..." << endl;
     pthread_create(&send_t, NULL, MPI_Connect_Wrapper::send_thread, this);
+    cout << "[Server]: send thread start..." << endl;
 
     //start accept thread
-    cout << "[Server]: accept thread start..." << endl;
     pthread_create(&accept_thread, NULL, MPI_Server::accept_conn_thread, this);
+    cout << "[Server]: accept thread start..." << endl;
 
     cout << "---------------------  init finish ----------------------------" << endl;
 }
 
 void MPI_Server::stop() {
+    cout << "-------------------stop start--------------------" << endl;
     cout << "[Server]: Ready to stop..." << endl;
     cout << "[Server]: Unpublish service name..." << endl;
     merr = MPI_Unpublish_name(svc_name_, MPI_INFO_NULL, port);
@@ -71,6 +72,21 @@ void MPI_Server::stop() {
     for(iter = client_comm_list.begin(); iter != client_comm_list.end(); iter++){
         MPI_Comm_disconnect(&(iter->second));
     }
+
+    finalize();
+    cout << "--------------------stop finish--------------------" << endl;
+}
+
+void MPI_Server::finalize() {
+    int ret;
+    ret = pthread_join(accept_thread, NULL);
+    cout << "[Server]: accept thread stop, exit code=" << ret << endl;
+    ret = pthread_join(recv_t, NULL);
+    cout << "[Server]: recv_thread stop, exit code=" << ret << endl;
+    ret = pthread_join(send_t, NULL);
+    cout << "[Server]: send_thread stop, exit code=" << ret << endl;
+
+    MPI_Finalize();
 }
 
 bool MPI_Server::new_msg_come(ARGS *args) {
@@ -195,7 +211,6 @@ void MPI_Server::bcast(void *buf, int msgsz, MPI_Datatype datatype, int tags) {
 
 void MPI_Server::run() {
     // TODO Server work flow, add exception handle
-    int ret;
 
     initial();
 
@@ -203,14 +218,7 @@ void MPI_Server::run() {
 
 
 
-    ret = pthread_join(accept_thread, NULL);
-    cout << "[Server]: accept thread stop, exit code=" << ret << endl;
-    ret = pthread_join(recv_t, NULL);
-    cout << "[Server]: recv_thread stop, exit code=" << ret << endl;
-    ret = pthread_join(send_t, NULL);
-    cout << "[Server]: send_thread stop, exit code=" << ret << endl;
 
-    MPI_Finalize();
 
 }
 

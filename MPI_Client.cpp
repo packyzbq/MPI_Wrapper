@@ -60,6 +60,16 @@ void MPI_Client::stop() {
     cout << "[Client]: disconnected..." << endl;
 }
 
+void MPI_Client::finalize() {
+    int ret;
+    ret = pthread_join(send_t, NULL);
+    cout <<"[Client]: send thread stop, exit code=" << ret << endl;
+    ret = pthread_join(recv_t, NULL);
+    cout <<"[Client]: recv thread stop, exit code=" << ret << endl;
+
+    MPI_Finalize();
+}
+
 void* MPI_Client::recv_thread(void* ptr) {
     //TODO add return code
     cout << "[Client] on host: "<< hostname << ", receive thread start..." << endl;
@@ -104,13 +114,7 @@ void MPI_Client::recv_handle(int tag, void *buf) {
 
 void MPI_Client::run() {
     // TODO main thread for client
-    int ret;
     initial();
 
-    ret = pthread_join(send_t, NULL);
-    cout <<"[Client]: send thread stop, exit code=" << ret << endl;
-    pthread_join(recv_t, NULL);
-    cout <<"[Client]: recv thread stop, exit code=" << ret << endl;
 
-    MPI_Finalize();
 }
