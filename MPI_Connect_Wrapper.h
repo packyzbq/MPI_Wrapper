@@ -76,7 +76,7 @@ public:
     };
 
     virtual ~MPI_Connect_Wrapper(){
-        MPI_Finalize();
+
     };
 
     virtual void run(){};

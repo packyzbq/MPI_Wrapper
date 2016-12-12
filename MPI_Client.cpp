@@ -12,6 +12,8 @@ MPI_Client::MPI_Client(Msg_handlerABC *mh, char* svc_name, char* port): MPI_Conn
     strcpy(portname,port);
 };
 
+
+
 void MPI_Client::initial() {
     cout << "--------------------inti start-------------------" << endl;
     cout << "[Client]: client initail..." << endl;

@@ -10,7 +10,7 @@
 class MPI_Client : public MPI_Connect_Wrapper{
 public:
     MPI_Client(Msg_handlerABC *mh, char* svc_name, char* port);
-
+    ~MPI_Client(){};
     virtual void run();
     void initial();
     void stop();
