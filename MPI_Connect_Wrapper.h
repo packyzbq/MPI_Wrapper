@@ -80,8 +80,8 @@ public:
     };
 
     virtual void run(){};
-    virtual void stop();
-    virtual void finalize();
+    virtual void stop(){};
+    virtual void finalize(){};
 
     static void* recv_thread(void* ptr);
     static void* send_thread(void* ptr);

@@ -3,7 +3,6 @@
 //
 
 #include "MPI_Client.h"
-#include <iostream>
 #include <cstring>
 
 using namespace std;
@@ -82,7 +81,7 @@ void* MPI_Client::recv_thread(void* ptr) {
 }
 
 bool MPI_Client::new_msg_come(ARGS *args) {
-    MPI_Status* stat;
+    MPI_Status* stat = new MPI_Status;
     int flag = 0;
     MPI_Iprobe(MPI_ANY_SOURCE,MPI_ANY_TAG, sc_comm_, &flag, stat);
     if(flag){
